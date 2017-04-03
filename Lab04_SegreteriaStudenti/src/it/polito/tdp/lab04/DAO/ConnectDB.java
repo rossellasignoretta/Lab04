@@ -23,5 +23,4 @@ public class ConnectDB {
 			throw new RuntimeException("Cannot get a connection " + jdbcUrl, e);
 		}
 	}
-
 }
