@@ -3,7 +3,6 @@ package it.polito.tdp.lab04.controller;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import it.polito.tdp.lab04.model.Corso;
 import it.polito.tdp.lab04.model.Model;
 import it.polito.tdp.lab04.model.Studente;
