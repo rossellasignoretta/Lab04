@@ -16,14 +16,9 @@ public class Model {
 	}
 	
 
-	public List<String> getNomiCorsi(){
+	public List<Corso> getCorsi(){
 		CorsoDAO c= new CorsoDAO();
-		corsi.addAll(c.getTuttiICorsi());
-		List <String> nomiCorsi= new LinkedList<String>();
-		for(Corso ctemp: corsi){
-			nomiCorsi.add(ctemp.getNome());
-		}
-		return nomiCorsi;
+		return c.getTuttiICorsi();
 		
 	}
 	
@@ -32,20 +27,20 @@ public class Model {
 		return s.getStudente(matricola);
 	}
 	
-	public List<Studente> cercaIscritti(String nome){
+	public List<Studente> cercaIscritti(Corso corso){
 		CorsoDAO c= new CorsoDAO();
-		
-		for(Corso ctemp: corsi){
-			if (ctemp.getNome().equals(nome)){
-				return c.getStudentiIscrittiAlCorso(ctemp);
-			}
-		}
-		return null;
+		return c.getStudentiIscrittiAlCorso(corso);
 	}
 	
 	public List<Corso> cercaCorsi(Studente s){
 		StudenteDAO studente= new StudenteDAO();
 		return studente.getCorsiACuiEIscrittoUnoStudente(s);
 	
+	}
+	
+	public boolean iscriviStudente(Studente studente, Corso corso){
+		CorsoDAO c= new CorsoDAO();
+		return c.inscriviStudenteACorso(studente, corso);
+		
 	}
 }

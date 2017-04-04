@@ -22,7 +22,7 @@ public class SegreteriaStudentiController {
 	List<Corso> corsi = new LinkedList<Corso>();
 
 	@FXML
-	private ComboBox<String> comboCorso;
+	private ComboBox<Corso> comboCorso;
 
 	@FXML
 	private Button btnCercaIscrittiCorso;
@@ -53,9 +53,8 @@ public class SegreteriaStudentiController {
 
 	public void setModel(Model model) {
 		this.model=model;
-		
-		comboCorso.getItems().add("Corsi");
-		comboCorso.getItems().addAll(model.getNomiCorsi());
+		comboCorso.getItems().add(new Corso(null, -1, "Corsi", -1));
+		comboCorso.getItems().addAll(model.getCorsi());
 	}
 
 	@FXML
@@ -85,7 +84,7 @@ public class SegreteriaStudentiController {
 			txtNome.setText(s.getNome());
 			txtCognome.setText(s.getCognome());
 		}else{
-			txtResult.setText("Matricola non esistente!");
+			txtResult.setText("Matricola inesistente!");
 			return;
 		}
 
@@ -94,9 +93,14 @@ public class SegreteriaStudentiController {
 	@FXML
 	void doCercaIscrittiCorso(ActionEvent event) {
 		txtResult.clear();
-		String nomeCorso=comboCorso.getValue();
+		Corso corso=comboCorso.getValue();
+		
+		if (corso.getNome().equals("Corsi")){
+			txtResult.setText("Nessun corso selezionato");
+			return;
+		}
 
-		List<Studente> studenti=model.cercaIscritti(nomeCorso);
+		List<Studente> studenti=model.cercaIscritti(corso);
 		for(Studente s: studenti){
 			txtResult.appendText(s.getMatricola()+"   "+s.getCognome()+"   "+s.getNome()+"   "+s.getCDS()+"\n");
 		}
@@ -105,26 +109,84 @@ public class SegreteriaStudentiController {
 	@FXML
 	void doCercaCorsi(ActionEvent event) {
 		txtResult.clear();
+		
 		int matricola=-1;
 		try{
 			matricola=Integer.parseInt(txtMatricola.getText());
 		}catch(NumberFormatException nfe){
 		}
-		Studente s=model.trovaStudente(matricola);
-		if (s!=null){
-			List <Corso> corsi=model.cercaCorsi(s);
-			for(Corso  c: corsi){
-				txtResult.appendText(c.getCodIns()+"   "+c.getCrediti()+"   "+c.getNome()+"   "+c.getPd()+"\n");
-			}
-		}else {
-			txtResult.setText("Matricola non esistente!");
+		
+		Studente studente=model.trovaStudente(matricola);
+		Corso corso=comboCorso.getValue();
+		
+		//CONTROLLO SE ESISTE LO STUDENTE
+		if (studente==null){
+			txtResult.setText("Matricola inesistente!");
 			return;
 		}
+		//CERCO I CORSI A CUI è ISCRITTO
+		List <Corso> corsi=model.cercaCorsi(studente);
+		//CONTROLLO SE LO STUDENTE è ISCRITTO AD ALMENO UN CORSO
+		if (corsi.size()==0){
+			txtResult.setText("Studente iscritto a nessun corso");
+			return;
+			}
+		//SE NON è STATO SELEZIONATO NESSUN CORSO STAMPO LA LISTA DI TUTTI I CORSI A CUI è ISCRITTO LO STUDENTE
+		if (corso.getNome().equals("Corsi") ){
+			for(Corso  c: corsi){
+				txtResult.appendText(c.getCodIns()+"   "+c.getCrediti()+"   "+c.getNome()+"   "+c.getPd()+"\n");
+				}
+			}else{ //ALTRIMENTI CONTROLLO SE LO STUDENTE è ISCRITTO AL CORSO SELEZIONATO
+				for(Corso  c: corsi){
+					if(c.equals(corso)){
+						txtResult.setText("Studente iscritto a questo corso");
+						return;
+					}
+				txtResult.setText("Studente non iscritto a questo corso");
+				}
+			}
+			
 	}
 
 	@FXML
 	void doIscrivi(ActionEvent event) {
-
+		txtResult.clear();
+		
+		int matricola=-1;
+		try{
+			matricola=Integer.parseInt(txtMatricola.getText());
+		}catch(NumberFormatException nfe){
+		}
+		
+		Studente studente=model.trovaStudente(matricola);
+		Corso corso=comboCorso.getValue();
+		
+		//CONTROLLO SE ESISTE LO STUDENTE
+		if (studente==null){
+			txtResult.setText("Matricola inesistente!");
+			return;
+		}
+		
+		//CONTROLLO SE è STATO SELEZIONATO UN CORSO
+		if (corso.getNome().equals("Corsi")){
+			txtResult.setText("Nessun corso selezionato");
+			return;
+		}
+		
+		//CONTROLLO SE è GIà ISCRITTO A QUEL CORSO
+		List <Corso> corsi=model.cercaCorsi(studente);
+		for(Corso  c: corsi){
+			if(c.equals(corso)){
+				txtResult.setText("Studente già iscritto a questo corso");
+				return;
+				}
+			}
+		
+		//ISCRIVO LO STUDENTE AL CORSO
+		if(model.iscriviStudente(studente, corso)){
+			txtResult.setText("Studente iscritto al corso!");
+		}
+		
 	}
 
 	@FXML
@@ -140,6 +202,7 @@ public class SegreteriaStudentiController {
 		assert txtMatricola != null : "fx:id=\"txtMatricola\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
 		assert btnReset != null : "fx:id=\"btnReset\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
 		
+		comboCorso.setValue(new Corso(null, -1, "Corsi", -1));
 	}
 
 }

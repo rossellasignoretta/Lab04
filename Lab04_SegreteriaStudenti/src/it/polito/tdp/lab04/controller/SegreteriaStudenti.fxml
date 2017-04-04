@@ -32,7 +32,7 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0">
                <children>
-                  <Button fx:id="btnCercaIscrittiCorso" mnemonicParsing="false" onAction="#doCercaIscrittiCorso" text="Cercca iscritti corso" />
+                  <Button fx:id="btnCercaIscrittiCorso" mnemonicParsing="false" onAction="#doCercaIscrittiCorso" text="Cerca iscritti corso" />
                </children>
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0" spacing="10.0">
