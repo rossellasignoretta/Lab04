@@ -42,4 +42,10 @@ public class Model {
 		}
 		return null;
 	}
+	
+	public List<Corso> cercaCorsi(Studente s){
+		StudenteDAO studente= new StudenteDAO();
+		return studente.getCorsiACuiEIscrittoUnoStudente(s);
+	
+	}
 }

@@ -69,6 +69,9 @@ public class SegreteriaStudentiController {
 
 	@FXML
 	void doCercaNome(ActionEvent event) {
+		txtResult.clear();
+		txtNome.clear();
+		txtCognome.clear();
 		int matricola=-1;
 		try{
 			matricola=Integer.parseInt(txtMatricola.getText());
@@ -101,7 +104,22 @@ public class SegreteriaStudentiController {
 
 	@FXML
 	void doCercaCorsi(ActionEvent event) {
-
+		txtResult.clear();
+		int matricola=-1;
+		try{
+			matricola=Integer.parseInt(txtMatricola.getText());
+		}catch(NumberFormatException nfe){
+		}
+		Studente s=model.trovaStudente(matricola);
+		if (s!=null){
+			List <Corso> corsi=model.cercaCorsi(s);
+			for(Corso  c: corsi){
+				txtResult.appendText(c.getCodIns()+"   "+c.getCrediti()+"   "+c.getNome()+"   "+c.getPd()+"\n");
+			}
+		}else {
+			txtResult.setText("Matricola non esistente!");
+			return;
+		}
 	}
 
 	@FXML
